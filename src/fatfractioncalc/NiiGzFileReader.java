@@ -9,8 +9,8 @@ import java.io.IOException;
 import niftijio.NiftiVolume;
 
 /**
- *
- * @author ariane
+ * Reads an .nii.gz, compressed segmentation file
+ * @authors Daniel Ward and Ariane Mora
  */
 public class NiiGzFileReader {
 
@@ -18,6 +18,12 @@ public class NiiGzFileReader {
 
     }
     
+    /**
+     * Opens the nifti volume specified by the given path
+     * @param niiGzPath
+     * @return instance of niftiVolume class containing the segmentation.
+     * @throws IOException 
+     */
     public NiftiVolume readNiiGzFile(String niiGzPath) throws IOException {
         NiftiVolume volume = null;
         volume = NiftiVolume.read(niiGzPath);

@@ -23,7 +23,7 @@ import niftijio.NiftiVolume;
 
 /**
  *
- * @author ariane
+ * @authors Daniel Ward and Ariane Mora
  */
 public class ComputeCalc {
     int width;
@@ -48,6 +48,11 @@ public class ComputeCalc {
         this.openDicom = openDicom;
     }
     
+    /**
+     * Calculates the average value of an arrayList of integers
+     * @param ints
+     * @return the average as a float
+     */
     float calcIntArrMean(ArrayList<Integer> ints) {
         float mean = 0;
         for (int i: ints) {
@@ -57,7 +62,26 @@ public class ComputeCalc {
         return mean;
     }
     
-    //OLD FROM 14-04016 BUG FIXED on 15/05/16 - need new instance of OpenDicom for each file opened
+    /**
+     * Computes the volumes of the different fats (BAT, WAT and, TF) for the
+     * given MRI and Segmentation.
+     * @param dicomList
+     * @param segmentList
+     * @param width
+     * @param height
+     * @param bounds
+     * @param voxDimen
+     * @return An array of Doubles containing the different volumes
+     * Format: [TF Mean Value, TF Volume (CC), TF smallest Value, 
+     * TF Average of smallest value from each MRI slice, TF largest Value, 
+     * TF Average of largest value from each MRI slice,
+     * WAT Mean Value, WAT Volume (CC), WAT smallest Value, 
+     * WAT Average of smallest value from each MRI slice, WAT largest Value, 
+     * WAT Average of largest value from each MRI slice,
+     * BAT Mean Value, BAT Volume (CC), BAT smallest Value, 
+     * BAT Average of smallest value from each MRI slice, BAT largest Value, 
+     * BAT Average of largest value from each MRI slice,
+     */
     double[] countSliceVolumes(String[] dicomList, NiftiVolume segmentList, int width, int height, int[] bounds, double voxDimen) {
         //Declare variables for counting fat volumes
         //Total Fat (TF)
@@ -253,16 +277,23 @@ public class ComputeCalc {
     }
     
     /**
-     * 
+     * Converts a count of voxels to a volume (cubic centimeters)
      * @param voxCount
      * @param voxDimen, list of voxel dimensions [x, y, z]
-     * @return 
+     * @return Volume in CC (Double)
      */
     private double voxToCm(int voxCount, double voxDimen) {
         //float voxVol = voxDimen[0] * voxDimen[1] * voxDimen[2];
         return voxCount * voxDimen * 0.001;
     }
 
+    /**
+     * DEBUG
+     * Takes the path of an MRI sequence and a slice number
+     * @param segment
+     * @param sliceNum
+     * @return An image plus of the particular slice from the MRI sequence
+     */
     ImagePlus getSliceArr(String segment, int sliceNum) {
         ImagePlus niImage = IJ.openImage(segment);
         niImage.show();

@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 /**
  *
- * @author ariane
+ * @authors Daniel Ward and Ariane Mora
  */
 public class OpenDicom {
 
@@ -206,7 +206,8 @@ public class OpenDicom {
     }
     
       /**
-       * 
+       * Reads the header information of an MRI image
+       * Calculates the volume of 1 voxel in CC
        * @param image
        * @return 
        */
@@ -341,8 +342,6 @@ public class OpenDicom {
      */
     public ImageProcessor openImaFile(String imaPath){
         dicom.open(imaPath);
-        
-
         return dicom.getProcessor();
     }
 }

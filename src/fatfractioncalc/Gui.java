@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author ariane
+ * @authors Daniel Ward and Ariane Mora
  */
 public class Gui extends javax.swing.JFrame {
     // Bounds selected when the user starts running the program

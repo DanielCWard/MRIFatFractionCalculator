@@ -12,8 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author ariane
+ * Produces and writes to the CSV output file.
+ * @authors Daniel Ward and Ariane Mora
  */
 public class CsvWriter {
     Mutex mutex;
@@ -31,6 +31,11 @@ public class CsvWriter {
 //        }
     }
     
+    /**
+     * Adds a string to the header of the CSV file.
+     * @param header
+     * @throws IOException 
+     */
     private void addHeader(String header) throws IOException {
         fileWriter.append(header);
         fileWriter.append("\n");
@@ -42,6 +47,12 @@ public class CsvWriter {
 //        }
     }
     
+    /**
+     * Writes the given string to a row in the CSV file
+     * @param row
+     * @throws InterruptedException
+     * @throws IOException 
+     */
     public void write(String row) throws InterruptedException, IOException {
         try {
             mutex.acquire();
@@ -66,7 +77,7 @@ public class CsvWriter {
     }
     
      /**
-     * Writes the column labels for the output csv file
+     * Writes the column labels for the output CSV file
      * @param bounds 
      */
     public void writeFirstRow(int[] bounds) throws InterruptedException, IOException {
@@ -97,6 +108,10 @@ public class CsvWriter {
         write(row);
     }
     
+    /**
+     * Closes the CSV File
+     * @throws IOException 
+     */
     public void closeCSVWriter() throws IOException {
         fileWriter.flush();
         fileWriter.close();
@@ -107,8 +122,9 @@ public class CsvWriter {
 //            Logger.getLogger(CsvWriter.class.getName()).log(Level.SEVERE, null, ex);
 //        }
     }
+    
     /**
-     * Writes the error output line to the output csv
+     * Writes the error output line to the output CSV
      * @param patientNum 
      */
     public void writeBadPatientRow(String patientNum) throws InterruptedException, IOException {

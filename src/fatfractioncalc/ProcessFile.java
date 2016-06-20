@@ -19,7 +19,7 @@ import niftijio.NiftiVolume;
 
 /**
  *
- * @author ariane
+ * @authors Daniel Ward and Ariane Mora
  */
 public class ProcessFile{
     

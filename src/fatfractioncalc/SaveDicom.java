@@ -7,8 +7,9 @@ package fatfractioncalc;
 
 /**
  *
- * @author ariane
+ * @authors Daniel Ward and Ariane Mora
  */
 public class SaveDicom {
+    //Todo
     
 }
