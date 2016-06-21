@@ -441,7 +441,7 @@ public class Gui extends javax.swing.JFrame {
         JFileChooser niFileChooser = new JFileChooser();
         boolean returned = false;
         while (returned == false) {
-            int niFileRetVal = niFileChooser.showDialog(jLabel1, "Select single patient segment file");
+            int niFileRetVal = niFileChooser.showDialog(jLabel1, "Select single participant segment file");
             if (niFileRetVal == JFileChooser.CANCEL_OPTION) {
                 return;
             }
@@ -469,7 +469,7 @@ public class Gui extends javax.swing.JFrame {
         while (returned == false) {
             JFileChooser niFolderChooser = new JFileChooser();
             niFolderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int niFolderRetVal = niFolderChooser.showDialog(jLabel1, "Select patient segments directory");
+            int niFolderRetVal = niFolderChooser.showDialog(jLabel1, "Select participant segments directory");
             if (niFolderRetVal == JFileChooser.CANCEL_OPTION) {
                 return;
             }
@@ -600,7 +600,7 @@ public class Gui extends javax.swing.JFrame {
                 proc.run();
           //      process.start();
                 count ++;
-                jLabel8.setText(count + " out of " + length + "patients completed.");
+                jLabel8.setText(count + " out of " + length + "participants completed.");
                 jLabel8.revalidate();
                 jLabel8.repaint();
                 progressBar.setValue(count);

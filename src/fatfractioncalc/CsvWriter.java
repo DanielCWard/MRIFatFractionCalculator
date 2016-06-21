@@ -81,12 +81,12 @@ public class CsvWriter {
      * @param bounds 
      */
     public void writeFirstRow(int[] bounds) throws InterruptedException, IOException {
-        String row = "PSCID, TIAF (%) (" + bounds[0] + "-" + bounds[1] + "), TIAF Vol (cm^3), TIAF abs Min (%), " + 
-                "TIAF mean Min (%), TIAF abs Max (%), TIAF mean Max (%), " + 
-                "BAT (%) (" + bounds[4] + "-" + bounds[5] + "), BAT Vol (cm^3), BAT abs Min (%), BAT mean Min (%), " +
-                "BAT abs Max (%), BAT mean Max (%), WAT (%) (" + bounds[2] + "-" + bounds[3] + "), WAT Vol (cm^3), " +
-                "WAT abs Min (%), WAT mean Min (%), WAT abs Max (%), " +
-                "WAT mean Max (%), Subject Height (m), Subject Weight (kg), " +
+        String row = "PSCID: Pediatric study centre ID, TFP (FF) (" + bounds[0] + "-" + bounds[1] + "), TFP Vol (cm^3), TFP abs Min (FF), " + 
+                "TFP mean Min (FF), TFP abs Max (FF), TFP mean Max (FF), " + 
+                "BAT (FF) (" + bounds[4] + "-" + bounds[5] + "), BAT Vol (cm^3), BAT abs Min (FF), BAT mean Min (FF), " +
+                "BAT abs Max (FF), BAT mean Max (FF), WAT (FF) (" + bounds[2] + "-" + bounds[3] + "), WAT Vol (cm^3), " +
+                "WAT abs Min (FF), WAT mean Min (FF), WAT abs Max (FF), " +
+                "WAT mean Max (FF), Subject Height (m), Subject Weight (kg), " +
                 "Sex, Age, DOB, Study ID, Study Date, Study Time, Series Date, Series Time, " +
                 "Acquisition Date, Acquisition Time, Image Date, Image Time, MRI Folder Time, " +
                 "Magnetic Field Strength (T), Voxel Height (mm), " +
@@ -128,7 +128,7 @@ public class CsvWriter {
      * @param patientNum 
      */
     public void writeBadPatientRow(String patientNum) throws InterruptedException, IOException {
-       String row = patientNum + ", No matching MRI files were found for patient " + patientNum;
+       String row = patientNum + ", No matching MRI files were found for participant " + patientNum;
        write(row);
     }
    
