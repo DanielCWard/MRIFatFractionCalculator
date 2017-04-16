@@ -7,10 +7,13 @@ package fatfractioncalc;
 
 import ij.process.ImageProcessor;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Hashtable;
 import niftijio.NiftiVolume;
 
 
@@ -34,7 +37,7 @@ public class ProcessFile implements Runnable{
     Thread thread;
     ComputeCalc calc;
     NiiGzFileReader reader;
-    String[] pathlist;
+    Hashtable<String, String[]> pathlist;
     
     /**
      * 
@@ -42,7 +45,7 @@ public class ProcessFile implements Runnable{
      * @param csv 
      */
    ProcessFile( CsvWriter csv, ComputeCalc calc , 
-           String[] pathlist) {
+           Hashtable<String, String[]> pathlist) {
         this.csv = csv;
         this.calc = calc;
         openDicom = new OpenDicom();
@@ -58,6 +61,33 @@ public class ProcessFile implements Runnable{
 
    }
    
+   private String getPatientNumFromNiiGz(String niiGzFileName, String template) {
+       /*
+       template should be the filename where '/' represent the patient number
+       E.g. /////////_BAT6YR.nii.gz
+       There should be just one set of slashes
+       */
+       if (template.length() != niiGzFileName.length()) {
+           System.err.println("NiiGz filename template mismatch\n" + template.length() + " " + niiGzFileName.length());
+           return "";
+       }
+       int start = -1;
+       int end = -1;
+       for (int i=0; i < template.length(); i++) {
+           if (template.charAt(i) == '/') {
+               if (start == -1) {
+                   start = i;
+               } else if (end == -1 && template.charAt(i+1) != '/') {
+                   end = i;
+                   break;
+               }
+           }
+       }
+       
+       String patientNumber = niiGzFileName.substring(start, end+1);
+       return patientNumber;
+   }
+   
    public void start() {
          thread = new Thread(this);
          thread.start();
@@ -71,8 +101,9 @@ public class ProcessFile implements Runnable{
         //String dicomPath = openDicom.getDicomFromNii(niFilePath, dicomDirPath, singlePatient);
         // If there are no dicom files matching then we insert a row stating that
         String row = "";
-        String[] niname = niFilePath.split("_");
-        String patientNum = niname[niname.length - 2].split("/")[1];
+        Path niFileName = Paths.get(niFilePath);
+        //Nigz template at index 2
+        String patientNum = getPatientNumFromNiiGz(niFileName.getFileName().toString(), pathlist.get("segmentFile")[0]);
         String mriDirPath = openDicom.getPatientFolder(listOfAllDicoms,
                 patientNum, pathlist);
         double[] ff;

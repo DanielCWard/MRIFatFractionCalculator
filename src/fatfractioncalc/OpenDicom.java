@@ -14,7 +14,10 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Hashtable;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -80,26 +83,85 @@ public class OpenDicom {
         return folderContents;
     }
     
+    /*
+    Finds if there is a match between search me and multiple options
+    */
+    Boolean findFirst(String searchMe, String[] options) {
+        for (String option : options) {
+            if (searchMe.contains(option)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /*
+    Finds and returns the best MRI folder from the scan list
+    Options is a list of templates in order of preference
+    Each option in options may contain 1 section of /'s which represents areas
+    where numbers may occur in the file name and the largest integer should be
+    taken
+    
+    Returns "" if there is no match
+    */
+    String findBestMRIFolder(String[] patientScanList, String[] options) {
+        for (String option : options) {
+            // Find if an item in scan list satisfies an option
+            // First to be satisfied will be returned and most preferential
+            int numSlashes = StringUtils.countMatches(option, "/");
+            if (numSlashes != 0) {
+                // Need to process considering number files
+                String[] compares = option.split(StringUtils.repeat("/", numSlashes));
+                ArrayList<String> possiblePaths = new ArrayList();
+                // Filter out paths that dont catain the template less the slashes
+                for (String possiblePath : patientScanList) {
+                    boolean validPath = true;
+                    for (String contain : compares) {
+                        if (!possiblePath.contains(contain)) {
+                            validPath = false;
+                        }
+                    }
+                    if (validPath) {
+                        possiblePaths.add(possiblePath);
+                    }
+                }
+                // Take the string with the largest number from the sorted strings
+                // This should be the one which is lexographically sorted at index first //last
+                if (possiblePaths.size() != 0) {
+                    Collections.sort(possiblePaths);
+                    return (String)possiblePaths.get(0);//possiblePaths.size()-1);
+                }
+            } else {
+                // just search with contains
+                for (String possiblePath : patientScanList) {
+                    if (possiblePath.contains(option)) {
+                        return possiblePath;
+                    }
+                }
+            }
+        }
+        return "";
+    }
+    
     
      /**
      * Returns a particular directory for a patient number Based on the
      * segementation file name
-     * @param pathlist is a list of the stings that make up the path, there are
+     * @param pathlist is a list of the templates that make up folders to 
+     * search for the images, there are
      * a couple of things that it could be. The user needs to specify this at 
      * the start
      * @param dicomDirPath
      * @return
      */
-    String getPatientFolder(String dicomDirPath, String patientNum, String[] pathlist) {
-        System.err.println("dicom path" + dicomDirPath + " Pathlist: " + pathlist[0] + pathlist[1] + 
-                pathlist[2] + pathlist[3] + pathlist[4] + 
-                pathlist[5] );
+    String getPatientFolder(String dicomDirPath, String patientNum, Hashtable<String, String[]> pathlist) {
         String path = null;
         boolean found = false;
-        // Find folder of patient based on number
+        // Find folder of patient based on number: PATIENT FOLDER LEVEL
         String[] listDirPaths = getSubFolders(dicomDirPath);
         for (String dirpath : listDirPaths) {
-            if (dirpath.contains(patientNum)) {
+            // If it contains the patient num and the patient Dir template
+            if (dirpath.contains(patientNum) && dirpath.contains(pathlist.get("subjectDir")[0])) {
                 path = dicomDirPath + '/' + dirpath;
                 found = true;
             }
@@ -112,73 +174,20 @@ public class OpenDicom {
         // Find relevent MRI folder in patient folder
         String[] patientDirList = getSubFolders(path);
         for (String patientFolder : patientDirList) {
-            if (patientFolder.contains(pathlist[0]) || patientFolder.contains(pathlist[1])) {
-            //if (patientFolder.contains("MRI_RESEARCH") || patientFolder.contains("MRI_BRAIN")) {
+            System.err.println(patientFolder);
+            if (findFirst(patientFolder, pathlist.get("studyOptions"))) {
                 path = path + '/' + patientFolder;
                 found = true;
             }
         }
-        //Find specific BAT MRI folder
-        if (found == false) {
-            return null;
-        }
-        found = false;
-        String[] patientScanList = getSubFolders(path);
-        ArrayList<String> listFPFolders = new ArrayList();
-        for (String patientSubFolders : patientScanList) {
-            System.out.println(patientSubFolders);
-            if (patientSubFolders.contains(pathlist[2]) || patientSubFolders.contains(pathlist[3])) {
-                if (patientSubFolders.contains(pathlist[4]) || patientSubFolders.contains(pathlist[5])) {            
-            //if (patientSubFolders.contains("AX") || patientSubFolders.contains("SCAPULA")) {
-            //    if (patientSubFolders.contains("FP") || patientSubFolders.contains("FF")) {
-                    found = true;
-                    listFPFolders.add(patientSubFolders);
-                }
-            }
-        }
-        // Find the most recent in the list of folders (containing RR - reviewed)
-        // First check if there is only 1 and return that
-        if (listFPFolders.size() == 0 || found == false) {
-            return null;
-        }
-        String latestRevision = null;
-        int revision = 0;
-        for (String folder : listFPFolders) {
-            //if (folder.contains("RR")) {
-            if (folder.contains(pathlist[6])) {
-                String[] folderName = folder.split("_");
-                int curRev = Integer.parseInt(folderName[folderName.length - 1]);
-                if (curRev > revision) {
-                    revision = curRev;
-                    latestRevision = folder;
-                }
-            }
-        }
-        // Check if there was a latest revision otherwise just return the first FP
-        if (latestRevision != null) {
-            return latestRevision;
-        }
         
-        for (String folder: listFPFolders) {
-            String[] folderName = folder.split("_");
-            String curRevStr = folderName[folderName.length - 1];
-            int curRev = Integer.parseInt(curRevStr);
-            String fpNum = "_" + pathlist[4] + "_" + curRevStr;
-            String ffNum = "_" + pathlist[5] + "_" + curRevStr;
-            //String fpNum = "_FP_" + curRevStr;
-            //String ffNum = "_FF_" + curRevStr;
-            if (curRev > revision) {
-                if (folder.contains(ffNum) || folder.contains(fpNum)) {
-                    revision = curRev;
-                    latestRevision = folder;
-                }
-            }
+        //Find specific BAT MRI folder
+        String mriDir = findBestMRIFolder(getSubFolders(path), pathlist.get("mriOptions"));
+        if (mriDir.compareTo("") == 0) {
+            return null;
+        } else {
+            return path + '/' + mriDir;
         }
-        if (latestRevision != null) {
-            return path + "/" + latestRevision;
-        }
-        return listFPFolders.get(0);
-
     }
     
     
@@ -214,6 +223,15 @@ public class OpenDicom {
         });
         return directories;
     }
+      
+    public String getHeaderInfo(String[] header, String info) {
+        for (String headerRow : header) {
+            if (headerRow.contains(info)) {
+                return headerRow;
+            }
+        }
+        return "";
+    }
     
       /**
        * 
@@ -224,26 +242,26 @@ public class OpenDicom {
         String info = dicom.getInfo(image);
         String[] header = info.split("\n");
         String[] releventInfo = new String[9];
-        String pixelSizing = header[102].split(":")[1];
+        String pixelSizing = getHeaderInfo(header, "Pixel Spacing:").split(":")[1];//header[102].split(":")[1];
         String[] px = pixelSizing.split("\\\\");
         //System.err.println("pixelSizing: " +   Arrays.toString(pixelSizing.split("\\\\")));
         //System.err.println("" + px.length);
-        String thickness = header[53].split(":")[1].split(" ")[1];
+        String thickness = getHeaderInfo(header, "Slice Thickness:").split(":")[1].split(" ")[1];//header[53].split(":")[1].split(" ")[1];
         sliceThickness =  Double.parseDouble(thickness); //Slice Thicknes
         //System.err.println("" + thickness + " " + sliceThickness);
         pixelXSize =  Double.parseDouble(px[0]);
         //System.err.println("pixelSizing: " + pixelXSize);
         pixelYSize =  Double.parseDouble(px[1]);
         voxVol = pixelXSize * pixelYSize * sliceThickness;
-        releventInfo[0] = header[40].split(":")[1]; //Patient ID
-        releventInfo[1] = header[44].split(":")[1]; //Patient Size
-        releventInfo[2] = header[45].split(":")[1]; //Patient Weight
-        releventInfo[3] = header[42].split(":")[1]; //Patient Sex
-        releventInfo[4] = header[43].split(":")[1]; //Patient Age
-        releventInfo[5] = header[41].split(":")[1]; //Patient Birth Date
-        releventInfo[6] = header[86].split(":")[1]; //Study instance ID
-        releventInfo[7] = header[11].split(":")[1]; //Study date
-        releventInfo[8] = header[60].split(":")[1]; //Magnetic field strength
+        releventInfo[0] = getHeaderInfo(header, "Patient ID:").split(":")[1];//header[40].split(":")[1]; //Patient ID
+        releventInfo[1] = getHeaderInfo(header, "Patient's Size:").split(":")[1];//header[44].split(":")[1]; //Patient Size
+        releventInfo[2] = getHeaderInfo(header, "Patient's Weight:").split(":")[1];//header[45].split(":")[1]; //Patient Weight
+        releventInfo[3] = getHeaderInfo(header, "Patient's Sex:").split(":")[1];//header[42].split(":")[1]; //Patient Sex
+        releventInfo[4] = getHeaderInfo(header, "Patient's Age:").split(":")[1];//header[43].split(":")[1]; //Patient Age
+        releventInfo[5] = getHeaderInfo(header, "Patient's Birth Date:").split(":")[1];//eader[41].split(":")[1]; //Patient Birth Date
+        releventInfo[6] = getHeaderInfo(header, "Study Instance UID:").split(":")[1];//header[86].split(":")[1]; //Study instance ID
+        releventInfo[7] = getHeaderInfo(header, "Study Date:").split(":")[1];//header[11].split(":")[1]; //Study date
+        releventInfo[8] = getHeaderInfo(header, "Magnetic Field Strength:").split(":")[1];//header[60].split(":")[1]; //Magnetic field strength
         return releventInfo;
     }
    
