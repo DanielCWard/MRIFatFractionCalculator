@@ -241,6 +241,9 @@ public class OpenDicom {
     public String[] getHeaderandCalcVoxVol(String image) {
         String info = dicom.getInfo(image);
         String[] header = info.split("\n");
+//        for (String row : header) {
+//            System.err.println(row);
+//        }
         String[] releventInfo = new String[9];
         String pixelSizing = getHeaderInfo(header, "Pixel Spacing:").split(":")[1];//header[102].split(":")[1];
         String[] px = pixelSizing.split("\\\\");
