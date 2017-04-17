@@ -129,7 +129,7 @@ public class OpenDicom {
                 // This should be the one which is lexographically sorted at index first //last
                 if (possiblePaths.size() != 0) {
                     Collections.sort(possiblePaths);
-                    return (String)possiblePaths.get(0);//possiblePaths.size()-1);
+                    return (String)possiblePaths.get(possiblePaths.size()-1); //0);
                 }
             } else {
                 // just search with contains
