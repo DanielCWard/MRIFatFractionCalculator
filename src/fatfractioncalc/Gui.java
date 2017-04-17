@@ -14,12 +14,12 @@ import javax.swing.JOptionPane;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author ariane
  */
 public class Gui extends javax.swing.JFrame {
+
     // Bounds selected when the user starts running the program
     int[] bounds;
     String nigzFilePath;
@@ -27,6 +27,7 @@ public class Gui extends javax.swing.JFrame {
     String dicomFolderPath;
     String csvFilePath;
     boolean singlePatient;
+
     /**
      * Creates new form Gui
      */
@@ -231,7 +232,7 @@ public class Gui extends javax.swing.JFrame {
             }
         });
 
-        jTextField3.setText("AX_VIBE_6ECHOES_SCAPULA_LL2_RR_FF_////, AX_VIBE_6ECHOES_SCAPULA_LL2_FF_////");
+        jTextField3.setText("AX_VIBE_6ECHOES_SCAPULA_LL2_RR_FF_////, AX_VIBE_6ECHOES_SCAPULA_LL2_FF_////, AX_VIBE_6ECHOES_BAT_LL2_SMALL_RR_FF_////, AX_VIBE_6ECHOES_BAT2_LL2_SMALL_FF_////");
         jTextField3.setToolTipText("");
         jTextField3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -312,13 +313,13 @@ public class Gui extends javax.swing.JFrame {
                             .addComponent(jLabel13)
                             .addComponent(jLabel11))
                         .addGap(62, 62, 62)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextField1)
-                            .addComponent(jTextField2)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)))
+                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)
+                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel15)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
                         .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 714, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -461,24 +462,24 @@ public class Gui extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-        private boolean dicomFileChooser() {
-            JFileChooser dicomFolderChooser = new JFileChooser();
-            dicomFolderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int dicomFolderRetVal = dicomFolderChooser.showDialog(jLabel1, "Select MRI Directory");
-            if (dicomFolderRetVal == JFileChooser.CANCEL_OPTION) {
-                return false;
-            }
-            File dicomFile = dicomFolderChooser.getSelectedFile();
-            if (dicomFile.isDirectory()) {
-                dicomFolderPath = dicomFile.getAbsolutePath();
-                return true;
-            } else {
-                JOptionPane.showMessageDialog(dicomFolderChooser, "You selected a file not a folder");
-                return false;
-            }
+    private boolean dicomFileChooser() {
+        JFileChooser dicomFolderChooser = new JFileChooser();
+        dicomFolderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int dicomFolderRetVal = dicomFolderChooser.showDialog(jLabel1, "Select MRI Directory");
+        if (dicomFolderRetVal == JFileChooser.CANCEL_OPTION) {
+            return false;
+        }
+        File dicomFile = dicomFolderChooser.getSelectedFile();
+        if (dicomFile.isDirectory()) {
+            dicomFolderPath = dicomFile.getAbsolutePath();
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(dicomFolderChooser, "You selected a file not a folder");
+            return false;
+        }
     }
 
-    
+
     private void startBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_startBtnMouseClicked
         if ((niFolderPath == null && nigzFilePath == null) || dicomFolderPath == null || csvFilePath == null) {
             return;
@@ -506,7 +507,7 @@ public class Gui extends javax.swing.JFrame {
             if (csvFileRetVal == JFileChooser.CANCEL_OPTION) {
                 return;
             }
-            File csvFile = csvFileChooser.getSelectedFile();            
+            File csvFile = csvFileChooser.getSelectedFile();
             if (csvFile.isDirectory()) {
                 String csvName = JOptionPane.showInputDialog("Input CSV File Name");
                 csvFilePath = csvFile.getAbsolutePath() + "/" + csvName;
@@ -655,29 +656,30 @@ public class Gui extends javax.swing.JFrame {
             }
         });
     }
-    
-   private Hashtable<String, String[]> pathlist_gen () {
-       
-       String subjectDir = jTextField1.getText();
-       String studyDir = jTextField2.getText();
-       String mriDir = jTextField3.getText();
-       String segDir = jTextField4.getText();
-       // Split up the mri folder options into individual option strings
-       String[] mriOptions = mriDir.split(", ");
-       String[] studyOptions = studyDir.split(", ");
-       int pathListSize = 4;
-       Hashtable<String, String[]> pathList = new Hashtable<String, String[]>();
-       
-       String[] subjectDirList = {subjectDir};
-       pathList.put("subjectDir", subjectDirList);
-       String[] segmentDirList = {segDir};
-       pathList.put("segmentFile", segmentDirList);
-       pathList.put("studyOptions", studyOptions);
-       pathList.put("mriOptions", mriOptions);
-       
-       return pathList;
-   }
-   private void start() {
+
+    private Hashtable<String, String[]> pathlist_gen() {
+
+        String subjectDir = jTextField1.getText();
+        String studyDir = jTextField2.getText();
+        String mriDir = jTextField3.getText();
+        String segDir = jTextField4.getText();
+        // Split up the mri folder options into individual option strings
+        String[] mriOptions = mriDir.split(", ");
+        String[] studyOptions = studyDir.split(", ");
+        int pathListSize = 4;
+        Hashtable<String, String[]> pathList = new Hashtable<String, String[]>();
+
+        String[] subjectDirList = {subjectDir};
+        pathList.put("subjectDir", subjectDirList);
+        String[] segmentDirList = {segDir};
+        pathList.put("segmentFile", segmentDirList);
+        pathList.put("studyOptions", studyOptions);
+        pathList.put("mriOptions", mriOptions);
+
+        return pathList;
+    }
+
+    private void start() {
         //csvFilePath = "/home/ariane/Desktop/TestFiles/test2.csv";
         /// nigzFilePath = "/media/ariane/GRMCULXFRER_EN_DVD/MRI_RESEARCH/019-30052_BAT.nii.gz";//"/home/ariane/Desktop/TestFiles/Segmentation files_BAT/010-04020_BAT.nii.gz";
         //dicomFolderPath = "/media/ariane/GRMCULXFRER_EN_DVD/MRI_RESEARCH";//"/home/ariane/Desktop/TestFiles/MRI 4.5";
@@ -708,26 +710,32 @@ public class Gui extends javax.swing.JFrame {
             int length = subfoldersFiles.length;
             progressBar.setMinimum(count);
             progressBar.setMaximum(length);
-            for (File file: subfoldersFiles) {
-                ProcessFile process = new ProcessFile(csv, calc, pathlist);
-                procList.add(process);
+            ProcessFile process = new ProcessFile(csv, calc, pathlist);
+
+            for (File file : subfoldersFiles) {
                 process.setParams(file.getAbsolutePath(), dicomFolderPath, bounds);
-                process.start();
-                count ++;
+                process.run();
+                count++;
                 progressBar.setValue(count);
+                        //                ProcessFile process = new ProcessFile(csv, calc, pathlist);
+                        //                procList.add(process);
+                        //                process.setParams(file.getAbsolutePath(), dicomFolderPath, bounds);
+                        //                process.start();
+                        //                count ++;
+                        //                progressBar.setValue(count);
             }
-            for (ProcessFile process: procList) {
-                try {
-                    process.thread.join();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+//            for (ProcessFile process: procList) {
+//                try {
+//                    process.thread.join();
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
         }
-        
+
         csv.closeCSVWriter();
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSlider BATMaxSider;
     private javax.swing.JSlider BATMinSlider;

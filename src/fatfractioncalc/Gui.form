@@ -200,15 +200,15 @@
                                   <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jTextField1" max="32767" attributes="0"/>
-                                  <Component id="jTextField2" max="32767" attributes="0"/>
-                                  <Component id="jTextField3" pref="714" max="32767" attributes="0"/>
+                                  <Component id="jTextField2" pref="714" max="32767" attributes="0"/>
+                                  <Component id="jTextField3" alignment="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <Group type="102" attributes="0">
                               <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace pref="61" max="32767" attributes="0"/>
                               <Component id="jTextField4" min="-2" pref="714" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -454,7 +454,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="jTextField3">
               <Properties>
-                <Property name="text" type="java.lang.String" value="AX_VIBE_6ECHOES_SCAPULA_LL2_RR_FF_////, AX_VIBE_6ECHOES_SCAPULA_LL2_FF_////"/>
+                <Property name="text" type="java.lang.String" value="AX_VIBE_6ECHOES_SCAPULA_LL2_RR_FF_////, AX_VIBE_6ECHOES_SCAPULA_LL2_FF_////, AX_VIBE_6ECHOES_BAT_LL2_SMALL_RR_FF_////, AX_VIBE_6ECHOES_BAT2_LL2_SMALL_FF_////"/>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
