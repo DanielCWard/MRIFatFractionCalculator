@@ -664,8 +664,8 @@ public class Gui extends javax.swing.JFrame {
         String mriDir = jTextField3.getText();
         String segDir = jTextField4.getText();
         // Split up the mri folder options into individual option strings
-        String[] mriOptions = mriDir.split(", ");
-        String[] studyOptions = studyDir.split(", ");
+        String[] mriOptions = mriDir.replace(" ", "").split(",");
+        String[] studyOptions = studyDir.replace(" ", "").split(",");
         int pathListSize = 4;
         Hashtable<String, String[]> pathList = new Hashtable<String, String[]>();
 

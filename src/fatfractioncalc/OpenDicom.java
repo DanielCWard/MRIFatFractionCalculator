@@ -5,17 +5,14 @@
  */
 package fatfractioncalc;
 
-import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.DICOM;
-import ij.plugin.FITS_Writer;
 import ij.process.ImageProcessor;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Hashtable;
 import org.apache.commons.lang3.StringUtils;
 
@@ -154,8 +151,9 @@ public class OpenDicom {
      * @param dicomDirPath
      * @return
      */
-    String getPatientFolder(String dicomDirPath, String patientNum, Hashtable<String, String[]> pathlist) {
+    String[] getPatientFolder(String dicomDirPath, String patientNum, Hashtable<String, String[]> pathlist) {
         String path = null;
+        String[] ret = {null, null};
         boolean found = false;
         // Find folder of patient based on number: PATIENT FOLDER LEVEL
         String[] listDirPaths = getSubFolders(dicomDirPath);
@@ -167,7 +165,8 @@ public class OpenDicom {
             }
         }
         if (found == false) {
-            return null;
+            ret[1] = path;
+            return ret;
         }
         found = false;
         
@@ -184,9 +183,12 @@ public class OpenDicom {
         //Find specific BAT MRI folder
         String mriDir = findBestMRIFolder(getSubFolders(path), pathlist.get("mriOptions"));
         if (mriDir.compareTo("") == 0) {
-            return null;
+            ret[1] = path;
+            return ret;
         } else {
-            return path + '/' + mriDir;
+            ret[1] = path + '/' + mriDir;
+            ret[0] = "Good";
+            return ret;
         }
     }
     

@@ -104,23 +104,23 @@ public class ProcessFile implements Runnable{
         Path niFileName = Paths.get(niFilePath);
         //Nigz template at index 2
         String patientNum = getPatientNumFromNiiGz(niFileName.getFileName().toString(), pathlist.get("segmentFile")[0]);
-        String mriDirPath = openDicom.getPatientFolder(listOfAllDicoms,
+        String[] mriDirPath = openDicom.getPatientFolder(listOfAllDicoms,
                 patientNum, pathlist);
         double[] ff;
        
-            if (mriDirPath == null) {
+            if (mriDirPath[0] == null) {
                 if (!niFilePath.contains("nii.gz")) {
                     return;
                 }
-                row = ("" + patientNum + "," + "No matching file" + "\n");
+                row = ("" + patientNum + "," + "No matching file, Partial path:" + mriDirPath[1] + "\n");
                 
             } else {
                 NiftiVolume niFile = reader.readNiiGzFile(niFilePath);
                 //Open what ever is in mriDirPath openDicom.open_ima_file(mriDirPath);
                 //Get a list of all the dicom files in the directory
-                System.err.println("This is the MRI dir path: " + mriDirPath);
+                System.err.println("This is the MRI dir path: " + mriDirPath[1]);
                        
-                String[] dicomList = sortFileSeq(mriDirPath);
+                String[] dicomList = sortFileSeq(mriDirPath[1]);
                 ImageProcessor firstIMAFile = openDicom.openImaFile(dicomList[0]);
                 //Gets size from the first dicom image
                 width = firstIMAFile.getWidth();
@@ -129,7 +129,7 @@ public class ProcessFile implements Runnable{
                 //Get header information from the first dicom file
                 String[] pd = openDicom.getHeaderandCalcVoxVol(dicomList[0]);
                 voxVol = openDicom.voxVol;
-                File file = new File(mriDirPath);
+                File file = new File(mriDirPath[1]);
                 Date dateMod = new Date(file.lastModified());
                 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");            
                 String dateLastMod = format.format(dateMod);
@@ -140,7 +140,7 @@ public class ProcessFile implements Runnable{
                         "," + pd[1] + "," + pd[2] + "," + pd[3] + "," + pd[4] + "," + pd[5] + "," + pd[6] + 
                         "," + pd[7] + "," + dateLastMod + "," + pd[8] + "," + 
                         openDicom.pixelYSize + "," + openDicom.pixelXSize + "," + openDicom.sliceThickness + "," + voxVol
-                        + "," + mriDirPath;
+                        + "," + mriDirPath[1];
                 
                 //System.err.print("output: " + Arrays.toString(pd) + "\n");
             }         
